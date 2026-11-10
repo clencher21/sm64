@@ -302,7 +302,7 @@ CHUT! Marchez doucement\n\
 dans les couloirs!!!"))
 
 DEFINE_DIALOG(DIALOG_020, 1, 6, 95, 150, _("\
-Mon très cher Mario:\n\
+Mon très cher Rudelführer:\n\
 Viens vite au château,\n\
 je t'ai préparé un\n\
 délicieux gâteau...\n\

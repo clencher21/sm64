@@ -261,7 +261,7 @@ Vorsicht, die Fliesen\n\
 sind frisch gebohnert!"))
 
 DEFINE_DIALOG(DIALOG_020, 1, 6, 95, 150, _("\
-Lieber Mario!\n\
+Lieber Rudelführer!\n\
 Komm mich doch einmal\n\
 im Schloss besuchen!\n\
 Der Kuchen steht bereit!\n\
