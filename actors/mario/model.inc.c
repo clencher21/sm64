@@ -6827,10 +6827,10 @@ const Gfx mario_metal_cap_wings_transparent[] = {
 /* Back of the overalls faces -Y. The cloth's deepest point is Y=-74,
  * so this quad sits just behind it and covers the width of the back. */
 static const Vtx mario_afd_back_logo_verts[] = {
-    {{{   72,   -96,  -58}, 0, {     0,      0}, {0xff, 0xff, 0xff, 0xff}}},
-    {{{   72,   -96,   58}, 0, {  1024,      0}, {0xff, 0xff, 0xff, 0xff}}},
-    {{{   -8,   -96,  -58}, 0, {     0,   1024}, {0xff, 0xff, 0xff, 0xff}}},
-    {{{   -8,   -96,   58}, 0, {  1024,   1024}, {0xff, 0xff, 0xff, 0xff}}},
+    {{{   72,   -96,  -58}, 0, {  1024,      0}, {0xff, 0xff, 0xff, 0xff}}},
+    {{{   72,   -96,   58}, 0, {     0,      0}, {0xff, 0xff, 0xff, 0xff}}},
+    {{{   -8,   -96,  -58}, 0, {  1024,   1024}, {0xff, 0xff, 0xff, 0xff}}},
+    {{{   -8,   -96,   58}, 0, {     0,   1024}, {0xff, 0xff, 0xff, 0xff}}},
 };
 
 /* Same 32x32 RGBA16 load as mario_cap_on_eyes_front. Four verts, indices 0-3. */
