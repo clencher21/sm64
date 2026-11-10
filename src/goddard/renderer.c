@@ -3369,6 +3369,44 @@ void Unknown801A5AE0(s32 arg0) {
 }
 
 /* 254328 -> 2543B8; orig name: func_801A5B58 */
+ALIGNED8 static Texture sGdAfdLogo[] = {
+#include "actors/mario/mario_afd_logo.rgba16.inc.c"
+};
+
+/* Same 32x32 RGBA16 sequence as gd_dl_star_common, which already runs on the title screen.
+ * Four verts, indices 0-3, then texture and combiner restored before the list ends. */
+static Vtx_t sGdAfdLogoVtx[] = {
+    {{-190, 670, 370}, 0, {  0,   0}, {0x00, 0x00, 0x7F}},
+    {{ 190, 670, 370}, 0, {992,   0}, {0x00, 0x00, 0x7F}},
+    {{-190, 440, 370}, 0, {  0, 992}, {0x00, 0x00, 0x7F}},
+    {{ 190, 440, 370}, 0, {992, 992}, {0x00, 0x00, 0x7F}},
+};
+
+static Gfx sGdAfdLogoDl[] = {
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsSPClearGeometryMode(G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
+    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_NOOP2),
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, sGdAfdLogo),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsSPVertex(sGdAfdLogoVtx, 4, 0),
+    gsSP1Triangle(0, 2, 1, 0),
+    gsSP1Triangle(1, 2, 3, 0),
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetRenderMode(G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2),
+    gsSPEndDisplayList(),
+};
+
+void gd_bind_afd_cap_logo(void) {
+    gSPDisplayList(next_gfx(), osVirtualToPhysical(sGdAfdLogoDl));
+}
+
 void set_vtx_tc_buf(f32 tcS, f32 tcT) {
     sVtxCvrtTCBuf[0] = (s16)(tcS * 512.0f);
     sVtxCvrtTCBuf[1] = (s16)(tcT * 512.0f);

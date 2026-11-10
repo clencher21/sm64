@@ -99,6 +99,7 @@ extern const Gfx mario_torso_dl[];
 extern const Gfx mario_torso[];
 extern const Gfx mario_metal_torso_shared_dl[];
 extern const Gfx mario_m_logo_dl[];
+extern const Gfx mario_afd_back_logo_dl[];
 extern const Gfx mario_eyes_cap_on_dl[];
 extern const Gfx mario_hair_sideburn_cap_on_dl[];
 extern const Gfx mario_mustache_cap_on_dl[];

@@ -116,6 +116,7 @@ static s16 mario_Face_VtxData[][3] = {
     { 0, 306, 339 },      { 0, 224, 357 },      { 162, 48, 567 },     { 156, -52, 567 },
     { -77, 126, 434 },    { -156, -52, 567 },   { -90, 127, 567 },    { 88, 127, 567 },
     { -67, -114, 567 },   { 66, -114, 567 },    { 76, 126, 434 },     { -157, 46, 567 },
+    { -160, 640, 375 },   { 160, 640, 375 },    { -160, 470, 375 },   { 160, 470, 375 },
 };
 
 static struct GdVtxData mario_Face_VtxInfo = { ARRAY_COUNT(mario_Face_VtxData), 0x1, mario_Face_VtxData };
@@ -341,6 +342,7 @@ static u16 mario_Face_FaceData[][4] = {
     { 7, 363, 361, 362 }, { 7, 362, 364, 363 }, { 7, 157, 154, 76 },  { 7, 151, 150, 156 },
     { 7, 421, 426, 184 }, { 7, 422, 155, 425 }, { 7, 420, 427, 424 }, { 7, 364, 184, 426 },
     { 7, 156, 424, 427 },
+    { 8, 440, 442, 441 }, { 8, 441, 442, 443 },
 };
 
 static struct GdFaceData mario_Face_FaceInfo = { ARRAY_COUNT(mario_Face_FaceData), 0x1, mario_Face_FaceData };
@@ -365,16 +367,16 @@ struct DynList dynlist_mario_face_shape[] = {
             SetId(1),
             SetAmbient(0.883, 0.602, 0.408),
             SetDiffuse(0.883, 0.602, 0.408),
-        // Shadow on back of hat
+        // Shadow on back of hat (AfD blue, darker)
         MakeDynObj(D_MATERIAL, 0),
             SetId(2),
-            SetAmbient(0.362, 0.0, 0.0),
-            SetDiffuse(0.362, 0.0, 0.0),
-        // Cap emblem color
+            SetAmbient(0.0, 0.18, 0.28),
+            SetDiffuse(0.0, 0.18, 0.28),
+        // Cap emblem. Same colour as the cap so the white M disappears.
         MakeDynObj(D_MATERIAL, 0),
             SetId(3),
-            SetAmbient(1.0, 1.0, 1.0),
-            SetDiffuse(1.0, 1.0, 1.0),
+            SetAmbient(0.0, 0.31, 0.44),
+            SetDiffuse(0.0, 0.62, 0.88),
         // Eye color
         MakeDynObj(D_MATERIAL, 0),
             SetId(4),
@@ -390,11 +392,16 @@ struct DynList dynlist_mario_face_shape[] = {
             SetId(6),
             SetAmbient(0.526, 0.0, 0.0),
             SetDiffuse(0.526, 0.0, 0.0),
-        // Cap color
+        // Cap color, AfD blue #009EE0
         MakeDynObj(D_MATERIAL, 0),
             SetId(7),
-            SetAmbient(1.0, 0.0, 0.0),
-            SetDiffuse(1.0, 0.0, 0.0),
+            SetAmbient(0.0, 0.31, 0.44),
+            SetDiffuse(0.0, 0.62, 0.88),
+        // Textured AfD logo on the front of the cap
+        MakeDynObj(D_MATERIAL, 0),
+            SetId(8),
+            SetAmbient(1.0, 1.0, 1.0),
+            SetDiffuse(1.0, 1.0, 1.0),
     EndGroup(DYNOBJ_MARIO_FACE_MTL_GROUP),
 
     MakeDynObj(D_SHAPE, DYNOBJ_MARIO_FACE_SHAPE),

@@ -449,6 +449,16 @@ void draw_face(struct ObjFace *face) {
     imin("draw_face");
     hasTextCoords = FALSE;
     if (sUseSelectedColor == FALSE && face->mtlId >= 0) { // -1 == colored face
+        if (face->mtlId == 8) {
+            /* Whole logo is one static 4-vert list. Drawn once, then restored. */
+            if (sUpdateViewState.mtlDlNum != -8) {
+                gd_dl_flush_vertices();
+                gd_bind_afd_cap_logo();
+                sUpdateViewState.mtlDlNum = -8;
+            }
+            imout();
+            return;
+        }
         if (face->mtl != NULL) {
             if ((i = face->mtl->gddlNumber) != 0) {
                 if (i != sUpdateViewState.mtlDlNum) {

@@ -268,6 +268,70 @@ void save_file_do_save(s32 fileIndex) {
     save_main_menu_data();
 }
 
+/**
+ * Mark one file 100% complete and write it through the normal EEPROM save.
+ * 15 courses x 7 stars, the 10 secret-course stars and the 5 castle stars are 120.
+ * Cannon bits sit in the high bit of the following course byte, matching
+ * save_file_is_cannon_unlocked. The cap stays on Mario's head.
+ */
+void save_file_make_complete(s32 fileIndex) {
+    struct SaveFile *file;
+    s32 course;
+
+    if (fileIndex < SAVE_FILE_A || fileIndex > SAVE_FILE_D) {
+        return;
+    }
+
+    file = &gSaveBuffer.files[fileIndex][0];
+    bzero(file, sizeof(*file));
+
+    file->flags = SAVE_FLAG_FILE_EXISTS
+        | SAVE_FLAG_HAVE_WING_CAP
+        | SAVE_FLAG_HAVE_METAL_CAP
+        | SAVE_FLAG_HAVE_VANISH_CAP
+        | SAVE_FLAG_HAVE_KEY_1
+        | SAVE_FLAG_HAVE_KEY_2
+        | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR
+        | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR
+        | SAVE_FLAG_DDD_MOVED_BACK
+        | SAVE_FLAG_MOAT_DRAINED
+        | SAVE_FLAG_UNLOCKED_PSS_DOOR
+        | SAVE_FLAG_UNLOCKED_WF_DOOR
+        | SAVE_FLAG_UNLOCKED_CCM_DOOR
+        | SAVE_FLAG_UNLOCKED_JRB_DOOR
+        | SAVE_FLAG_UNLOCKED_BITDW_DOOR
+        | SAVE_FLAG_UNLOCKED_BITFS_DOOR
+        | SAVE_FLAG_UNLOCKED_50_STAR_DOOR
+        | SAVE_FLAG_COLLECTED_TOAD_STAR_1
+        | SAVE_FLAG_COLLECTED_TOAD_STAR_2
+        | SAVE_FLAG_COLLECTED_TOAD_STAR_3
+        | SAVE_FLAG_COLLECTED_MIPS_STAR_1
+        | SAVE_FLAG_COLLECTED_MIPS_STAR_2;
+
+    for (course = 0; course < COURSE_STAGES_COUNT; course++) {
+        file->courseStars[course] = 0x7F;
+        file->courseCoinScores[course] = 100;
+    }
+    // Cannon for course number C is stored in courseStars[C], not courseStars[C - 1].
+    for (course = COURSE_MIN; course <= COURSE_STAGES_MAX; course++) {
+        file->courseStars[course] |= 0x80;
+    }
+
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_BITDW)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_BITFS)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_BITS)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_PSS)] |= 0x03;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_COTMC)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_TOTWC)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_VCUTM)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_WMOTR)] |= 0x01;
+    file->courseStars[COURSE_NUM_TO_INDEX(COURSE_SA)] |= 0x01;
+
+    touch_high_score_ages(fileIndex);
+    gSaveFileModified = TRUE;
+    save_file_do_save(fileIndex);
+}
+
 void save_file_erase(s32 fileIndex) {
     touch_high_score_ages(fileIndex);
     bzero(&gSaveBuffer.files[fileIndex][0], sizeof(gSaveBuffer.files[fileIndex][0]));

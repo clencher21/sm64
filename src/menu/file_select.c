@@ -1630,11 +1630,83 @@ void bhv_menu_button_manager_loop(void) {
     sClickPos[1] = -10000;
 }
 
+/* "L/R/Z 100" — hold L and R, press Z, cursor on a file. */
+static const u8 sCompleteHint[] = {
+    ASCII_TO_DIALOG('L'), DIALOG_CHAR_SLASH, ASCII_TO_DIALOG('R'), DIALOG_CHAR_SLASH,
+    ASCII_TO_DIALOG('Z'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('1'), ASCII_TO_DIALOG('0'),
+    ASCII_TO_DIALOG('0'), DIALOG_CHAR_TERMINATOR
+};
+
+/**
+ * Which main-menu file button the cursor is over, or -1.
+ * Same projection as check_clicked_button, using the live cursor.
+ */
+static s32 file_under_cursor(void) {
+    s32 i;
+    s32 best = 0;
+    f32 bestDist = 100000000.0f;
+    f32 a = 52.4213f;
+
+    for (i = 0; i < NUM_SAVE_FILES; i++) {
+        struct Object *button = sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A + i];
+        f32 newX;
+        f32 newY;
+        f32 dx;
+        f32 dy;
+        f32 dist;
+
+        if (button == NULL) {
+            continue;
+        }
+        newX = ((f32) button->oPosX * 160.0f) / (a * 200.0f);
+        newY = ((f32) button->oPosY * 120.0f) / (a * 0.75f * 200.0f);
+        dx = sCursorPos[0] - newX;
+        dy = sCursorPos[1] - newY;
+        dist = dx * dx + dy * dy;
+        if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+        }
+    }
+    return best;
+}
+
+/**
+ * On the select-file screen, L+R+Z over a file marks that file 100% complete.
+ */
+static void try_complete_file_under_cursor(void) {
+    s32 fileIndex;
+    u16 down = gPlayer3Controller->buttonDown;
+    u16 pressed = gPlayer3Controller->buttonPressed;
+
+    if (sSelectedButtonID != MENU_BUTTON_NONE) {
+        return;
+    }
+    if ((down & (L_TRIG | R_TRIG | Z_TRIG)) != (L_TRIG | R_TRIG | Z_TRIG)) {
+        return;
+    }
+    if ((pressed & (L_TRIG | R_TRIG | Z_TRIG)) == 0) {
+        return;
+    }
+
+    fileIndex = file_under_cursor();
+    save_file_make_complete(fileIndex);
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A + fileIndex]->header.gfx.sharedChild =
+        gLoadedGraphNodes[MODEL_MAIN_MENU_MARIO_SAVE_BUTTON_FADE];
+    play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+}
+
 /**
  * Cursor function that handles button inputs.
  * If the cursor is clicked, sClickPos uses the same value as sCursorPos.
  */
 void handle_cursor_button_input(void) {
+    try_complete_file_under_cursor();
+    // The complete combo uses Z. Don't also treat that press as a click.
+    if (sSelectedButtonID == MENU_BUTTON_NONE
+        && (gPlayer3Controller->buttonDown & (L_TRIG | R_TRIG | Z_TRIG)) == (L_TRIG | R_TRIG | Z_TRIG)) {
+        return;
+    }
     // If scoring a file, pressing A just changes the coin score mode.
     if (sSelectedButtonID == MENU_BUTTON_SCORE_FILE_A || sSelectedButtonID == MENU_BUTTON_SCORE_FILE_B
         || sSelectedButtonID == MENU_BUTTON_SCORE_FILE_C
@@ -3066,6 +3138,10 @@ static void print_file_select_strings(void) {
 #else
             print_main_menu_strings();
 #endif
+            gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
+            print_generic_string(108, 12, sCompleteHint);
+            gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
             break;
         case MENU_BUTTON_SCORE:
             print_score_menu_strings();
